@@ -2,7 +2,6 @@ import gspread
 from selenium import webdriver
 import time
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 from getpass_asterisk.getpass_asterisk import getpass_asterisk
 
@@ -39,25 +38,35 @@ dt_string = now.strftime("%m/%d/%Y %H:%M:%S")
 worksheet.update("B2", dt_string)
 
 """Set up the browser driver."""
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+service = Service()
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
 
 """Provide the URL for the Okta login page and provide login credentials."""
-username = getpass_asterisk("IIT Username: ")
-password = getpass_asterisk("IIT Password: ")
-sec_question = getpass_asterisk("Security Answer: ")
+username = input("IIT Username: ")
+password = input("IIT Password: ")
+sec_question = input("Security Answer: ")
+
+
+
 driver.get('https://login.iit.edu/cas/login?service=https%3A%2F%2Fmy.iit.edu%2Fc%2Fportal%2Flogin')
-input_uname = driver.find_element("xpath", '/html/body/div[2]/div[2]/main/div[2]/div/div/form/div[1]/div[2]/div[1]/div[2]/span/input')
-input_pswd = driver.find_element("xpath", '/html/body/div[2]/div[2]/main/div[2]/div/div/form/div[1]/div[2]/div[2]/div[2]/span/input')
+time.sleep(2)
+input_uname = driver.find_element("xpath", '//*[@id="input28"]')
+input_pswd = driver.find_element("xpath", '//*[@id="input36"]')
 input_uname.send_keys(username)
 input_pswd.send_keys(password)
-btn_login = driver.find_element("xpath", '//*[@id="okta-signin-submit"]')
+btn_login = driver.find_element("xpath", '//*[@id="form20"]/div[2]/input')
 btn_login.click()
 time.sleep(2)
 
 """Provide your answer to the Okta security question."""
-input_security = driver.find_element("xpath", '/html/body/div[2]/div[2]/main/div[2]/div/div/form/div[1]/div[2]/div[1]/div[2]/span/input')
+btn_sec_question = driver.find_element("xpath", '/html/body/div[2]/div[2]/main/div[2]/div/div/div[2]/form/div[2]/div/div[2]/div[2]/div[2]/a')
+btn_sec_question.click()
+time.sleep(2)
+
+input_security = driver.find_element("xpath", '/html/body/div[2]/div[2]/main/div[2]/div/div/div[2]/form/div[1]/div[4]/div/div[2]/span/input')
 input_security.send_keys(sec_question)
-btn_seclogin = driver.find_element("xpath", '/html/body/div[2]/div[2]/main/div[2]/div/div/form/div[2]/input')
+btn_seclogin = driver.find_element("xpath", '/html/body/div[2]/div[2]/main/div[2]/div/div/div[2]/form/div[2]/input')
 btn_seclogin.click()
 time.sleep(5)
 
@@ -82,10 +91,23 @@ for i in anumbers:
     time.sleep(2)
     driver.switch_to.window(driver.window_handles[2])
 
-    FWS_Amount_Element = driver.find_element("xpath", '/html/body/div[2]/div/div/div/div/div/div/div/section/div/div/div/div/div/div/form/table/tbody/tr[2]/td/table/tbody/tr[6]/td[4]/label')
-    FWS_Amount = FWS_Amount_Element.text
-    FWS_Balance_Element = driver.find_element("xpath", '/html/body/div[2]/div/div/div/div/div/div/div/section/div/div/div/div/div/div/form/table/tbody/tr[2]/td/table/tbody/tr[6]/td[6]/label')
-    FWS_Balance = FWS_Balance_Element.text
+    try:
+        FWS_Amount_Element = driver.find_element("xpath", '/html/body/div[2]/div/div/div/div/div/div/div/section/div/div/div/div/div/div/form/table/tbody/tr[2]/td/table/tbody/tr[6]/td[4]/label')
+        FWS_Amount = FWS_Amount_Element.text
+
+    except:
+        FWS_Amount_Element = "NO FWS"
+        FWS_Amount = FWS_Amount_Element
+
+
+    try:
+        FWS_Balance_Element = driver.find_element("xpath", '/html/body/div[2]/div/div/div/div/div/div/div/section/div/div/div/div/div/div/form/table/tbody/tr[2]/td/table/tbody/tr[6]/td[6]/label')
+        FWS_Balance = FWS_Balance_Element.text
+
+    except:
+        FWS_Balance_Element = "NO FWS"
+        FWS_Balance = FWS_Balance_Element
+
     print(FWS_Amount + ", " + FWS_Balance)
     time.sleep(3)
 
