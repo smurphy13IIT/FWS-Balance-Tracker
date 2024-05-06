@@ -3,7 +3,6 @@ from selenium import webdriver
 import time
 from selenium.webdriver.chrome.service import Service
 from datetime import datetime
-from getpass_asterisk.getpass_asterisk import getpass_asterisk
 
 
 """
@@ -25,7 +24,7 @@ This code was adapted from a script that was provided by Rama Sashank Madhurapan
 """
 
 """Set up GSpread Authentication to retrieve a Google Sheet list of student A-Numbers."""
-gc = gspread.service_account(filename=r"C:\Users\smurphy13\Downloads\fws-balance-tracker.json")
+gc = gspread.service_account(filename=r"C:\Users\Sean IIT\PycharmProjects\FWS Balance Tracker\fws-balance-tracker.json")
 sh = gc.open("Library Student Assistant FWS Balances Dashboard")
 worksheet = sh.sheet1
 
@@ -35,7 +34,7 @@ for i in range(1,4):
 
 now = datetime.now()
 dt_string = now.strftime("%m/%d/%Y %H:%M:%S")
-worksheet.update("B2", dt_string)
+worksheet.update_acell("B2", str(dt_string))
 
 """Set up the browser driver."""
 service = Service()
